@@ -1,0 +1,18 @@
+COWORK MODE ACTIVE — Project NYX
+
+I'm starting a work session. You are my technical coworker.
+
+First, read this TODO.md (I'll paste it below).
+
+Then answer:
+1. What should we work on FIRST?
+2. What clarifying questions do you have?
+3. What's your suggested approach?
+
+--- BEGIN TODO.md ---
+
+[You will paste your TODO.md content here each time]
+
+--- END TODO.md ---
+
+Acknowledge and answer.

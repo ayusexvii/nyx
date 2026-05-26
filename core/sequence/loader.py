@@ -109,112 +109,24 @@ class SequenceLoader:
     # Private helpers
     # ------------------------------------------------------------------
 
-    def _detect_format(self, path: Path) -> str:
-        """
-        Resolve Bio format string from file extension, stripping .gz first.
-
-        Args:
-            path: File path, may end in .gz.
-
-        Returns:
-            Biopython format string, e.g. "fasta".
-
-        Raises:
-            ValueError: If the base extension is not in SUPPORTED_FORMATS.
-        """
-        name = path.name
-        if name.endswith(".gz"):
-            name = name[:-3]  # strip .gz, then check base extension
-        ext = Path(name).suffix.lower()
-
-        if ext not in self.SUPPORTED_FORMATS:
-            raise ValueError(
-                f"Unsupported file extension '{ext}'. "
-                f"Supported: {list(self.SUPPORTED_FORMATS)}"
-            )
-        return self.SUPPORTED_FORMATS[ext]
-
-    def _parse(self, path: Path, fmt: str) -> list[SeqRecord]:
-        """
-        Open plain or gzipped file and parse with Biopython.
-
-        Args:
-            path: Validated file path.
-            fmt:  Biopython format string.
-
-        Returns:
-            List of SeqRecord objects (may be empty).
-        """
-        opener = gzip.open if path.name.endswith(".gz") else open
-        mode = "rt"  # text mode for both openers
-
-        try:
-            with opener(path, mode) as handle:
-                return list(SeqIO.parse(handle, fmt))
-        except Exception as exc:
-            logger.error("Failed to parse %s: %s", path.name, exc)
-            raise
-
-    def _convert(self, records: list[SeqRecord], source_file: str) -> list[Sequence]:
-        """
-        Convert Biopython SeqRecord objects to NYX Sequence objects.
-        Skips records with empty sequences and logs a warning.
-
-        Args:
-            records:     List of SeqRecord from Biopython.
-            source_file: Original file path string, stored in metadata.
-
-        Returns:
-            List of valid Sequence objects.
-        """
-        sequences: list[Sequence] = []
-
-        for record in records:
-            seq_str = str(record.seq).strip()
-
-            if not seq_str:
-                logger.warning("Skipping empty sequence: id=%s", record.id)
-                continue
-
-            metadata: dict = {"source_file": source_file}
-
-            ec = self._extract_ec(record.description)
-            if ec:
-                metadata["ec_number"] = ec
-                logger.debug("EC number found for %s: %s", record.id, ec)
-
-            sequences.append(
-                Sequence(
-                    id=record.id,
-                    sequence=seq_str,
-                    description=record.description,
-                    metadata=metadata,
-                )
-            )
-
-        return sequences
-
-    @staticmethod
-    def _extract_ec(header: str) -> Optional[str]:
-        """
-        Extract the first EC number from a FASTA header string.
-
-        Recognises:
-            EC:1.2.3.4          (standard UniProt style)
-            ec_number=1.2.3.4   (common annotation style)
-
-        Args:
-            header: Full FASTA description line.
-
-        Returns:
-            EC number string like "1.2.3.4", or None if not found.
-        """
-        for pattern in _EC_PATTERNS:
-            match = pattern.search(header)
-            if match:
-                return match.group(1)
-        return None
-
+def _detect_format(self, path: Path) -> str:
+    """Resolve Bio format string from file extension."""
+    name = path.name
+    if name.endswith(".gz"):
+        name = name[:-3]
+    ext = Path(name).suffix.lower()
+    
+    if ext not in self.SUPPORTED_FORMATS:
+        raise ValueError(
+            f"Unsupported file extension '{ext}'. "
+            f"Supported: {list(self.SUPPORTED_FORMATS)}"
+        )
+    
+    # For FASTA files, use fasta-blast which handles comment lines
+    if self.SUPPORTED_FORMATS[ext] == "fasta":
+        return "fasta-blast"  # This handles comment lines starting with ; ! #
+    
+    return self.SUPPORTED_FORMATS[ext]
 
 # ---------------------------------------------------------------------------
 # Example usage (run this file directly to smoke-test)
