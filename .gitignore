@@ -6,3 +6,14 @@
 *.joblib
 data/processed/
 models/*.pkl
+
+# Large data files
+data/external/*.fasta
+data/external/ec_*.fasta
+data/external/ec*.fasta
+data/external/training_*.fasta
+data/processed/
+models/
+*.npy
+*.pkl
+*.joblib
