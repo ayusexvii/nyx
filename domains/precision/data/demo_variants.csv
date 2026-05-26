@@ -1,0 +1,12 @@
+gene,variant,drug,response
+CYP2C19,*2,clopidogrel,poor
+CYP2C19,*3,clopidogrel,poor
+CYP2C19,*17,clopidogrel,rapid
+CYP2D6,*4,codeine,poor
+CYP2D6,*10,codeine,intermediate
+CYP2D6,*1xN,codeine,ultrarapid
+VKORC1,-1639G>A,warfarin,sensitive
+CYP2C9,*2,warfarin,sensitive
+CYP2C9,*3,warfarin,sensitive
+DPYD,*2A,fluorouracil,toxicity
+DPYD,*13,fluorouracil,toxicity
