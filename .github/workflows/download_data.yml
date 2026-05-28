@@ -1,0 +1,25 @@
+name: Daily UniProt Download
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download EC 1.1 sequences
+        run: |
+          mkdir -p data/daily
+          curl -L "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=ec:1.1.*&size=5000" \
+            > data/daily/ec1.1_$(date +'%Y%m%d').fasta
+      
+      - name: Commit and push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add data/daily/ && git commit -m "Daily data update $(date +'%Y%m%d')" || echo "No changes"
+          git push
