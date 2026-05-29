@@ -22,5 +22,5 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           pip install huggingface-hub
-          huggingface-cli login --token $HF_TOKEN
-          huggingface-cli upload ayuse/nyx-enzymes data/daily/ --repo-type=dataset
+          hf auth login --token $HF_TOKEN
+          hf upload ayuse/nyx-enzymes data/daily/ --repo-type=dataset
