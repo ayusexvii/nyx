@@ -17,9 +17,10 @@ jobs:
           curl -L "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=ec:1.1.*&size=5000" \
             > data/daily/ec1.1_$(date +'%Y%m%d').fasta
       
-      - name: Commit and push
+      - name: Upload to HuggingFace
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add data/daily/ && git commit -m "Daily data update $(date +'%Y%m%d')" || echo "No changes"
-          git push
+          pip install huggingface-hub
+          huggingface-cli login --token $HF_TOKEN
+          huggingface-cli upload ayuse/nyx-enzymes data/daily/ --repo-type=dataset
