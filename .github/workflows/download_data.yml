@@ -14,7 +14,7 @@ jobs:
       - name: Download EC 1.1 sequences
         run: |
           mkdir -p data/daily
-          curl -L "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=ec:1.1.*&size=5000" \
+          curl -L "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=reviewed:true+AND+ec:1.1.*&size=5000" \
             > data/daily/ec1.1_$(date +'%Y%m%d').fasta
       
       - name: Upload to HuggingFace
